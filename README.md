@@ -1,5 +1,7 @@
 # Persona Bio
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 A responsive personal profile and blog theme for [EmDash CMS](https://emdashcms.com/), built with Astro and configured for Cloudflare Workers.
 
 [Download ZIP](https://github.com/ahmetcigsar/emdash-theme-persona-bio/archive/refs/heads/main.zip) · [Use this template](https://github.com/new?template_name=emdash-theme-persona-bio&template_owner=ahmetcigsar) · [Theme guide](docs/theme.md)
@@ -81,4 +83,8 @@ Content routes also support the `/tr/` prefix. Pages take precedence if a post a
 
 ## License
 
-MIT. See [LICENSE](LICENSE) and [third-party notices](THIRD_PARTY_NOTICES.md). Your own published content can use a different license.
+Persona Bio is distributed under the [MIT License](LICENSE).
+
+You may use, modify, and redistribute the theme, including in commercial projects, under the terms of that license. Retain the copyright and permission notices when distributing copies or substantial portions of the software. The theme is provided without warranty.
+
+Bundled sample text and SVG placeholders are covered by the same license. Dependencies and fonts retain their own licenses; see [third-party notices](THIRD_PARTY_NOTICES.md). Content you publish on your own site is not automatically licensed under MIT.
