@@ -1,0 +1,23 @@
+---
+import { isSafeHref, type MenuItem } from "emdash";
+import ContentMenu from "./ContentMenu.astro";
+interface Props { items: MenuItem[]; }
+const { items } = Astro.props;
+import { localeFromUrl, localePath, menuLabel } from "../../utils/i18n";
+const locale = localeFromUrl(Astro.url);
+const pathname = Astro.url.pathname.replace(/\/$/, "") || "/";
+function current(url: string) {
+  if (!url.startsWith("/") || url.startsWith("//")) return undefined;
+  const path = url.split(/[?#]/)[0].replace(/\/$/, "") || "/";
+  if (path === pathname) return "page";
+  const homePath = localePath("/", locale).replace(/\/$/, "") || "/";
+  if (path !== homePath && pathname.startsWith(`${path}/`)) return "location";
+  return undefined;
+}
+---
+<ul class="content-menu-items">
+  {items.map(item => <li>
+    {isSafeHref(item.url) ? <a href={localePath(item.url, locale)} target={item.target} title={item.titleAttr} rel={item.target === "_blank" ? "noopener noreferrer" : undefined} aria-current={current(localePath(item.url, locale))}>{menuLabel(item.label, locale)}</a> : <span>{menuLabel(item.label, locale)}</span>}
+    {item.children?.length > 0 && <ContentMenu items={item.children} />}
+  </li>)}
+</ul>

@@ -1,0 +1,295 @@
+---
+import { localizedPosts } from "../../utils/localized-posts";
+import { localeFromUrl, localePath, translate } from "../../utils/i18n";
+const locale = localeFromUrl(Astro.url);
+const t = (text: string) => translate(locale, text);
+import PostCard from "../../components/PostCard.astro";
+import Base from "../../layouts/Content.astro";
+import { getReadingTime } from "../../utils/reading-time";
+import { getCommentCount } from "emdash";
+
+// Sort in the database rather than in JS — lets the DB use its index on
+// published_at and avoids a full-table scan on the client.
+const { entries: posts, cacheHint } = await localizedPosts(locale, {
+	orderBy: { published_at: "desc" },
+});
+
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+const commentCounts = new Map(
+  await Promise.all(posts.map(async (post) => [post.data.id, await getCommentCount("posts", post.data.id)] as const)),
+);
+
+---
+<Base title={t("Yazılar")} description={t("Notlar, fikirler ve üzerine düşündüklerim.")}>
+  <section class="archive-section posts-page" data-view="single">
+    <div class="posts-toolbar">
+      <div class="view-switcher" role="group" aria-label={t("Yazı görünümü")}>
+        <button type="button" data-view-option="list" aria-pressed="false">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" /></svg>
+          <span>{t("Liste")}</span>
+        </button>
+        <button type="button" data-view-option="grid" aria-pressed="false">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="12" y="3" width="5" height="5" rx="1"/><rect x="3" y="12" width="5" height="5" rx="1"/><rect x="12" y="12" width="5" height="5" rx="1"/></svg>
+          <span>{t("Kare")}</span>
+        </button>
+        <button type="button" data-view-option="single" aria-pressed="true">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4" width="14" height="12" rx="2"/></svg>
+          <span>{t("Tekli")}</span>
+        </button>
+      </div>
+    </div>
+    {posts.length === 0 ? <div class="content-empty"><h2>{t("Biraz düşünce, biraz zaman.")}</h2><p>{t("Yeni yazılar burada yerini alacak.")}</p><a href={localePath("/", locale)}>{t("Ana sayfaya dön")} →</a></div> : <>
+      <ul class="post-titles">{posts.map((post) => <li><a href={localePath(`/${post.id}`, locale)}>{post.data.title}</a></li>)}</ul>
+      <div class="posts-grid">{posts.map((post) => <PostCard title={post.data.title} excerpt={post.data.excerpt} featuredImage={post.data.featured_image} href={`/${post.id}`} date={post.data.publishedAt ?? undefined} readingTime={getReadingTime(post.data.content)} commentCount={commentCounts.get(post.data.id) ?? 0} metaAfterTitle coverBackground showReadMore={false} />)}</div>
+    </>}
+  </section>
+
+  <script>
+    const page = document.querySelector<HTMLElement>(".posts-page");
+    const buttons = document.querySelectorAll<HTMLButtonElement>("[data-view-option]");
+    const validViews = ["list", "grid", "single"];
+
+    function setView(view: string) {
+      if (!page || !validViews.includes(view)) return;
+      page.dataset.view = view;
+      buttons.forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.viewOption === view));
+      });
+      try { localStorage.setItem("posts-view", view); } catch {}
+    }
+
+    try {
+      const savedView = localStorage.getItem("posts-view");
+      if (savedView) setView(savedView);
+    } catch {}
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => setView(button.dataset.viewOption || "list"));
+    });
+  </script>
+</Base>
+
+<style>
+  .posts-page :global(.card-read > span) { display: none; }
+  .posts-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .view-switcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px;
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    background: var(--nav-glass);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: blur(20px) saturate(160%);
+  }
+
+  .view-switcher button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 15px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--color-muted);
+    font: 500 13px/1 var(--font-body);
+    cursor: pointer;
+    transition: color .18s ease, background .18s ease, border-color .18s ease;
+  }
+
+  .view-switcher button:hover {
+    color: light-dark(#1d2128, #fff);
+    background: var(--nav-glass-active);
+    border-color: var(--glass-border-active);
+  }
+
+  .view-switcher button[aria-pressed="true"] {
+    color: light-dark(#1d2128, #fff);
+    background: var(--nav-glass-active);
+    border-color: var(--glass-border-active);
+    font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .view-switcher button { transition: none; }
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .view-switcher { -webkit-backdrop-filter: none; backdrop-filter: none; }
+  }
+
+  .view-switcher svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+  }
+
+  .post-titles { display: none; margin: 0; padding: 0; list-style: none; }
+
+  .posts-page[data-view="list"] .post-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 31.2px;
+  }
+
+  .post-titles li { min-width: 0; }
+
+  .post-titles a {
+    display: inline-block;
+    max-width: 95%;
+    color: light-dark(#545b62, #a5adb7);
+    font-size: clamp(24px, 2.4vw, 34px);
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -.03em;
+    overflow-wrap: anywhere;
+    text-decoration: none;
+    transform-origin: left center;
+    transition: transform .32s cubic-bezier(.22, 1, .36, 1), color .25s ease;
+  }
+
+  .post-titles a:hover,
+  .post-titles a:focus-visible {
+    color: light-dark(#111, #fff);
+    transform: translateX(8px) scale(1.06);
+  }
+
+  .post-titles a:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .post-titles li:has(+ li:hover) > a,
+    .post-titles li:hover + li > a { transform: translateX(5px) scale(1.018); }
+
+    .post-titles li:has(+ li + li:hover) > a,
+    .post-titles li:hover + li + li > a { transform: translateX(2px) scale(1.008); }
+  }
+
+  :global(html[data-public-theme] .content-panel .posts-page .post-card--cover) {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    padding: 0;
+    border-color: rgb(255 255 255 / 12%);
+    background: #17212c;
+  }
+
+  :global(.posts-page .post-card--cover .card-link) {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: 390px;
+    isolation: isolate;
+    color: #fff;
+  }
+
+  :global(.posts-page .post-card--cover .card-link::before) {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgb(9 15 22 / 38%) 0%, rgb(9 15 22 / 64%) 45%, rgb(9 15 22 / 91%) 100%);
+  }
+
+  :global(html[data-public-theme] .content-panel .posts-page .post-card--cover :is(.card-image, .card-placeholder)) {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    aspect-ratio: auto;
+  }
+
+  :global(.posts-page .post-card--cover .card-image img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  :global(.posts-page .post-card--cover .card-placeholder) {
+    background: linear-gradient(135deg, #354555, #17212c 75%);
+  }
+
+  :global(.posts-page .post-card--cover .card-placeholder span) { display: none; }
+
+  :global(html[data-public-theme] .content-panel .posts-page .post-card--cover .card-body) {
+    position: relative;
+    z-index: 2;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 32px;
+  }
+
+  :global(.posts-page .post-card--cover :is(.card-title, .card-read)),
+  :global(.posts-page .post-card--cover .card-link:hover .card-title) {
+    color: #fff;
+    text-shadow: 0 1px 12px rgb(0 0 0 / 32%);
+  }
+
+  :global(html[data-public-theme] .content-panel .posts-page .post-card--cover :is(.card-meta, .card-excerpt)) {
+    color: #e4eaf0;
+  }
+
+  :global(.posts-page .post-card--cover .meta-dot) { background: #d8e0e8; }
+  :global(.posts-page .post-card--cover .card-title) { margin: 12px 0 10px; }
+  :global(.posts-page .post-card--cover .card-read) { justify-content: flex-start; margin-top: 18px; }
+  :global(.posts-page .post-card--cover .card-link:focus-visible) {
+    outline: 3px solid #fff;
+    outline-offset: -5px;
+  }
+
+  .posts-page[data-view="grid"] .posts-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .posts-page[data-view="single"] .posts-grid {
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+
+  .posts-page[data-view="single"] :global(.card-link) { min-height: 440px; }
+  .posts-page[data-view="single"] :global(.card-body) { padding: 42px; }
+  .posts-page[data-view="single"] :global(.card-title) { font-size: clamp(28px, 3vw, 38px); }
+  .posts-page[data-view="single"] :global(.card-excerpt) { max-width: 680px; font-size: 17px; }
+
+  :global(html[data-public-theme] .content-panel .posts-page[data-view="list"] .posts-grid) { display: none; }
+
+  @media (max-width: 700px) {
+    .posts-page :global(.card-meta) { row-gap: 4px; }
+    .posts-page :global(.meta-dot) { display: none; }
+    .posts-toolbar { align-items: stretch; margin-bottom: 20px; }
+    .view-switcher { width: 100%; }
+    .view-switcher button { flex: 1; padding-inline: 10px; }
+    .posts-page[data-view="grid"] .posts-grid { grid-template-columns: minmax(0, 1fr); }
+    .posts-page[data-view="list"] .post-titles { gap: 24px; }
+    .post-titles a { max-width: 96%; font-size: clamp(21px, 6vw, 26px); }
+    .post-titles a:hover,
+    .post-titles a:focus-visible { transform: translateX(4px) scale(1.035); }
+    .posts-page[data-view="grid"] :global(.card-link) { min-height: 360px; }
+    .posts-page[data-view="single"] :global(.card-link) { min-height: 400px; }
+    .posts-page[data-view] :global(.card-body) { padding: 24px; }
+    .posts-page[data-view="single"] :global(.card-title) { font-size: 28px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .post-titles a { transition: none; }
+    .post-titles a:hover,
+    .post-titles a:focus-visible { transform: none; }
+  }
+</style>

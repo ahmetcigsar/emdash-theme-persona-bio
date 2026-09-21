@@ -1,0 +1,6 @@
+---
+import PersonaBio from "../../../layouts/PersonaBio.astro";
+import ProfileCard from "../../../components/personabio/ProfileCard.astro";
+import { demoProfile, demoLinks } from "../../../themes/personabio/demo";
+---
+<PersonaBio title="Persona Bio — Theme Preview" description={demoProfile.description} demo><ProfileCard profile={demoProfile} links={demoLinks} menu={[{id:"home",label:"Home",url:"/",children:[]},{id:"about",label:"About",url:"/about",children:[]},{id:"posts",label:"Posts",url:"/posts",children:[]}]}/></PersonaBio>

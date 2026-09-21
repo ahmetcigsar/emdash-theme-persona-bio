@@ -1,0 +1,36 @@
+---
+import Base from "../layouts/Content.astro";
+import { localeFromUrl, localePath, translate } from "../utils/i18n";
+const locale = localeFromUrl(Astro.url);
+const t = (text: string) => translate(locale, text);
+---
+
+<Base title={t("Sayfa bulunamadı")}>
+	<div class="not-found">
+		<h1>404</h1>
+		<p>{t("Aradığınız sayfa bulunamadı.")}</p>
+		<a href={localePath("/", locale)}>{t("Ana sayfaya dön")}</a>
+	</div>
+</Base>
+
+<style>
+	.not-found {
+		text-align: center;
+		padding: var(--spacing-24) var(--spacing-6);
+	}
+
+	.not-found h1 {
+		font-size: var(--font-size-5xl);
+		margin-bottom: var(--spacing-2);
+		color: var(--color-border);
+	}
+
+	.not-found p {
+		color: var(--color-muted);
+		margin-bottom: var(--spacing-6);
+	}
+
+	.not-found a {
+		color: var(--color-text);
+	}
+</style>

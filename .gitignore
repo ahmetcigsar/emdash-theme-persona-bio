@@ -1,0 +1,14 @@
+node_modules
+dist
+.astro
+.emdash/
+uploads
+data.db
+.wrangler/
+
+# Environment / Wrangler secrets
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*

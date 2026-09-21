@@ -1,0 +1,5 @@
+---
+// EmDash's default Live View URL for the homepage profile.
+if (Astro.params.slug !== "personabio") return new Response("Not found", {status:404});
+return Astro.redirect(`/${Astro.url.search}`, 302);
+---

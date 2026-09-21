@@ -1,0 +1,4 @@
+---
+if (Astro.params.slug !== "personabio") return Astro.redirect("/en/404");
+return Astro.redirect(`/en/${Astro.url.search}`, 302);
+---

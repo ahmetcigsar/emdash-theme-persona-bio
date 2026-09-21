@@ -1,0 +1,44 @@
+---
+import { localeFromUrl, localePath, translate } from "../utils/i18n";
+const locale = localeFromUrl(Astro.url);
+const t = (text: string) => translate(locale, text);
+---
+<dialog id="site-search-dialog" class="site-search-dialog" aria-label={t("Yazılarda ara")}>
+  <form method="get" action={localePath("/search", locale)} class="search-dialog-form">
+    <label class="search-dialog-field">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="10.75" cy="10.75" r="6.75"/><path d="m16 16 4.25 4.25"/></svg>
+      <input type="search" name="q" aria-label={t("Yazılarda ara")} placeholder={t("Yazılarda ara...")} required autofocus />
+    </label>
+    <button type="submit">{t("Ara")}</button>
+  </form>
+  <button class="search-dialog-close" type="button" data-close-search aria-label={locale === "tr" ? "Aramayı kapat" : "Close search"}>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"/></svg>
+  </button>
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>("#site-search-dialog");
+  const trigger = document.querySelector<HTMLAnchorElement>(".content-search-link");
+  if (dialog && trigger) {
+    trigger.setAttribute("aria-haspopup", "dialog");
+    trigger.setAttribute("aria-controls", dialog.id);
+    trigger.addEventListener("click", (event) => {
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      dialog.showModal();
+      document.documentElement.classList.add("search-dialog-open");
+      dialog.querySelector<HTMLInputElement>("input")?.focus();
+    });
+    dialog.querySelector("[data-close-search]")?.addEventListener("click", () => dialog.close());
+    dialog.addEventListener("click", (event) => {
+      if (event.target !== dialog) return;
+      const bounds = dialog.getBoundingClientRect();
+      if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.close();
+    });
+    dialog.addEventListener("close", () => {
+      document.documentElement.classList.remove("search-dialog-open");
+      if (trigger.getClientRects().length) trigger.focus();
+      else document.querySelector<HTMLButtonElement>(".content-menu-toggle")?.focus();
+    });
+  }
+</script>

@@ -1,0 +1,17 @@
+---
+interface Props { icons?: boolean }
+const { icons = false } = Astro.props;
+import { localeFromUrl, translate } from "../utils/i18n";
+const locale = localeFromUrl(Astro.url);
+---
+{icons ? <div class="appearance-icons" role="group" aria-label={translate(locale, "Renk teması")}>
+  <button type="button" data-appearance-option="light" aria-label={translate(locale, "Açık tema")} title={translate(locale, "Açık tema")} aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button>
+  <button type="button" data-appearance-option="dark" aria-label={translate(locale, "Koyu tema")} title={translate(locale, "Koyu tema")} aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.9 13.1A9 9 0 0 1 10.9 3.1a9 9 0 1 0 10 10Z"/></svg></button>
+</div> : <div class="appearance-control">
+  <label>{translate(locale, "Tema")}
+    <select data-appearance-select aria-label={translate(locale, "Renk teması")}>
+      <option value="light">{translate(locale, "Açık")}</option>
+      <option value="dark" selected>{translate(locale, "Koyu")}</option>
+    </select>
+  </label>
+</div>}

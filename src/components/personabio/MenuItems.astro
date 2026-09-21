@@ -1,0 +1,30 @@
+---
+import { isSafeHref, type MenuItem } from "emdash";
+import MenuItems from "./MenuItems.astro";
+interface Props { items: MenuItem[]; }
+const { items } = Astro.props;
+import { localeFromUrl, localePath, menuLabel } from "../../utils/i18n";
+const locale = localeFromUrl(Astro.url);
+function isExternal(href: string): boolean {
+  try {
+    return new URL(href, Astro.url).origin !== Astro.url.origin;
+  } catch {
+    return false;
+  }
+}
+---
+<ul class="personabio-menu-items">
+  {items.map(item => {
+    const href = localePath(item.url, locale);
+    const external = isExternal(href);
+    return <li>
+      {isSafeHref(item.url) ? <a href={href} target={item.target} title={item.titleAttr} rel={item.target === "_blank" ? "noopener noreferrer" : undefined} aria-current={Astro.url.pathname.replace(/\/$/, "") === href.replace(/\/$/, "") ? "page" : undefined}>
+        <span>{menuLabel(item.label, locale)}</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" data-link-icon={external ? "external" : "internal"}>
+          {external ? <path d="M7 17 17 7M8 7h9v9"/> : <path d="M5 12h14m-6-6 6 6-6 6"/>}
+        </svg>
+      </a> : <span class="personabio-menu-label">{menuLabel(item.label, locale)}</span>}
+      {item.children?.length > 0 && <MenuItems items={item.children}/>}
+    </li>;
+  })}
+</ul>

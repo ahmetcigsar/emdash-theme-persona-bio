@@ -1,0 +1,11 @@
+---
+import AppearanceControl from "./AppearanceControl.astro";
+import LanguageControl from "./LanguageControl.astro";
+interface Props { content?: { collection: string; id: string; slug?: string | null } }
+const { content } = Astro.props;
+---
+<div class="personabio-footer">
+  <AppearanceControl icons />
+  <LanguageControl content={content} fullLabels />
+  <p class="personabio-copyright">Built with <a href="https://emdashcms.com">EmDash</a> · Persona Bio</p>
+</div>

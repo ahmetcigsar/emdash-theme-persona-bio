@@ -1,0 +1,170 @@
+---
+import { getSiteSettingsWithCacheHint } from "emdash";
+import { localizedEntry as getEmDashEntry, localizedMenu as getMenuWithCacheHint } from "../utils/localized-content";
+import ContentMenu from "../components/personabio/ContentMenu.astro";
+import LinkIcon from "../components/personabio/LinkIcon.astro";
+import { Image } from "emdash/ui";
+import {
+	EmDashHead,
+	EmDashBodyStart,
+	EmDashBodyEnd,
+} from "emdash/ui";
+import { createPublicPageContext } from "emdash/page";
+
+import { Font } from "astro:assets";
+import { resolveBlogSiteIdentity } from "../utils/site-identity";
+import "../styles/tokens.css";
+import "../styles/theme.css";
+import "../styles/appearance.css";
+import AppearanceHead from "../components/AppearanceHead.astro";
+import SiteFavicon from "../components/SiteFavicon.astro";
+import FooterPreferences from "../components/FooterPreferences.astro";
+import SearchDialog from "../components/SearchDialog.astro";
+import { localeFromUrl, localePath, translate } from "../utils/i18n";
+const locale = localeFromUrl(Astro.url);
+const t = (text: string) => translate(locale, text);
+
+interface Props {
+	title: string;
+	pageTitle?: string | null;
+	description?: string | null;
+	image?: string | null;
+	canonical?: string | null;
+	robots?: string | null;
+	type?: "website" | "article";
+	publishedTime?: string | null;
+	modifiedTime?: string | null;
+	author?: string | null;
+	/** Pass content reference for plugin page contributions on content pages */
+	content?: { collection: string; id: string; slug?: string | null };
+}
+
+const {
+	title,
+	pageTitle,
+	description,
+	image,
+	canonical,
+	robots,
+	type = "website",
+	publishedTime,
+	modifiedTime,
+	author,
+	content,
+} = Astro.props;
+const [settingsResult, menuResult, socialResult, profileResult] = await Promise.all([
+  getSiteSettingsWithCacheHint(), getMenuWithCacheHint("primary", { locale }), getMenuWithCacheHint("social", { locale }), getEmDashEntry("bio_profiles", "personabio", { locale }),
+]);
+for (const result of [settingsResult, menuResult, socialResult, profileResult]) {
+  if (Astro.cache?.enabled) Astro.cache.set(result.cacheHint);
+}
+const siteTitle = t(resolveBlogSiteIdentity(settingsResult.data).siteTitle);
+const profile = profileResult.entry?.data;
+const identity = profile?.title || siteTitle;
+const menu = menuResult.data;
+const socialLinks = (socialResult.data?.items ?? []).map((link) => {
+  const emailPath = link.url.match(/^\/email\/([^/?#\s]+@[^/?#\s]+)(\?.*)?$/i);
+  return { ...link, href: emailPath ? `mailto:${emailPath[1]}${emailPath[2] ?? ""}` : link.url };
+}).filter((link) => {
+  if (link.href.startsWith("/") && !link.href.startsWith("//")) return true;
+  try { return ["https:", "http:", "mailto:", "tel:"].includes(new URL(link.href).protocol); } catch { return false; }
+});
+const fullTitle = title.includes(siteTitle) ? title : `${title} — ${siteTitle}`;
+// Build public page context for plugin contributions
+// SEO data is passed here and rendered securely by EmDashHead
+const pageCtx = createPublicPageContext({
+	Astro,
+	kind: content ? "content" : "custom",
+	pageType: type,
+	title: fullTitle,
+	pageTitle: pageTitle ?? title,
+	description,
+	canonical,
+	image,
+	content,
+	seo: { ogImage: image, robots },
+	articleMeta: { publishedTime, modifiedTime, author },
+	siteName: siteTitle,
+});
+
+---
+<!doctype html>
+<html lang={locale} data-public-theme="personabio-content" data-appearance="dark">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <SiteFavicon />
+    <AppearanceHead />
+    <Font cssVariable="--font-personabio" preload /><Font cssVariable="--font-mono" />
+    <title>{fullTitle}</title><EmDashHead page={pageCtx} />
+  </head>
+  <body>
+    <EmDashBodyStart page={pageCtx} />
+    <a class="content-skip" href="#main-content">{t("İçeriğe geç")}</a>
+    <div class="content-shell">
+      <header class="content-header">
+        <a class="content-identity" href={localePath("/", locale)}>
+          {profile?.avatar && <Image image={profile.avatar} alt="" width={48} height={48} />}
+          <span>{identity}<small>{t("Yaşam yolundan notlar")}</small></span>
+        </a>
+        <button class="content-menu-toggle" type="button" aria-label={t("Ana menü")} aria-expanded="false" aria-controls="content-navigation" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path class="menu-bars" d="M4 6h16M4 12h16M4 18h16"/><path class="menu-close" d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+        <nav id="content-navigation" class="content-nav" aria-label={t("Ana menü")}>
+          <button class="content-drawer-close" type="button" aria-label={t("Menüyü kapat")} title={t("Menüyü kapat")}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+          <ContentMenu items={menu?.items ?? []} />
+          <a class="content-search-link" href={localePath("/search", locale)} aria-current={Astro.url.pathname === localePath('/search', locale) ? 'page' : undefined} aria-label={t("Yazılarda ara")} title={t("Ara")}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="10.75" cy="10.75" r="6.75"/><path d="m16 16 4.25 4.25"/></svg></a>
+          {socialLinks.length > 0 && <div class="content-drawer-social" aria-label={t("Profil bağlantıları")}><ul>{socialLinks.map((link) => <li><a href={link.href} aria-label={link.label} title={link.label} target={link.target} rel={link.target === "_blank" ? "noopener noreferrer" : undefined}><LinkIcon url={link.href} /></a></li>)}</ul></div>}
+        </nav>
+      </header>
+      <div class="content-menu-backdrop" aria-hidden="true"></div>
+      <main id="main-content" class="content-panel"><slot /></main>
+      <footer class="content-preferences-footer" aria-label={t("Alt bilgi")}>
+        <FooterPreferences content={content} />
+      </footer>
+    </div>
+    <SearchDialog />
+    <EmDashBodyEnd page={pageCtx} />
+  </body>
+</html>
+
+<script>
+  const header = document.querySelector<HTMLElement>(".content-header");
+  const toggle = header?.querySelector<HTMLButtonElement>(".content-menu-toggle");
+  const nav = header?.querySelector<HTMLElement>(".content-nav");
+  const drawerClose = nav?.querySelector<HTMLButtonElement>(".content-drawer-close");
+  const backdrop = document.querySelector<HTMLElement>(".content-menu-backdrop");
+  if (header && toggle && nav && drawerClose && backdrop) {
+    const mobile = window.matchMedia("(max-width: 736px)");
+    const setOpen = (open: boolean, restoreFocus = false) => {
+      const wasOpen = header.dataset.menuOpen === "true";
+      toggle.setAttribute("aria-expanded", String(open));
+      header.dataset.menuOpen = String(open);
+      document.documentElement.dataset.mobileMenuOpen = String(open && mobile.matches);
+      nav.inert = mobile.matches && !open;
+      if (!open) nav.querySelectorAll<HTMLDetailsElement>("details[open]").forEach((details) => details.open = false);
+      if (open) requestAnimationFrame(() => drawerClose.focus());
+      else if (restoreFocus && wasOpen) requestAnimationFrame(() => toggle.focus());
+    };
+    header.dataset.mobileNav = "ready";
+    toggle.hidden = false;
+    setOpen(false);
+    toggle.addEventListener("click", () => setOpen(true));
+    drawerClose.addEventListener("click", () => setOpen(false, true));
+    backdrop.addEventListener("click", () => setOpen(false, true));
+    nav.addEventListener("click", (event) => {
+      if (event.target instanceof Element && event.target.closest("a")) setOpen(false);
+    });
+    document.addEventListener("keydown", (event) => {
+      if (!mobile.matches || header.dataset.menuOpen !== "true") return;
+      if (event.key === "Escape") { setOpen(false, true); return; }
+      if (event.key !== "Tab") return;
+      const focusable = Array.from(nav.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), summary, [tabindex]:not([tabindex="-1"])')).filter((element) => element.getClientRects().length > 0);
+      const first = focusable[0];
+      const last = focusable.at(-1);
+      if (!first || !last) return;
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    });
+    mobile.addEventListener("change", () => setOpen(false));
+  }
+</script>

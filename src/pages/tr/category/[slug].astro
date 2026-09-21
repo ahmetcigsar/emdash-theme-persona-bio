@@ -1,0 +1,8 @@
+---
+import Page from "../../category/[slug].astro";
+import { localizedTerm } from "../../../utils/localized-content";
+import { decodeSlug } from "emdash";
+const slug = decodeSlug(Astro.params.slug);
+if (!slug || !(await localizedTerm("category", slug, { locale: "en", includeCounts: false }))) return Astro.redirect("/en/404");
+---
+<Page />

@@ -1,0 +1,18 @@
+---
+import { Font } from "astro:assets";
+import { EmDashHead, EmDashBodyStart, EmDashBodyEnd } from "emdash/ui";
+import { createPublicPageContext } from "emdash/page";
+import "../styles/personabio.css";
+import "../styles/appearance.css";
+import AppearanceHead from "../components/AppearanceHead.astro";
+import SiteFavicon from "../components/SiteFavicon.astro";
+import { localeFromUrl } from "../utils/i18n";
+interface Props { title: string; description?: string; demo?: boolean; content?: {collection:string; id:string; slug?:string} }
+const {title, description, content, demo = false} = Astro.props;
+const page = createPublicPageContext({Astro, kind: content ? "content" : "custom", pageType:"website", title, description, content, seo: demo ? {robots:"noindex, nofollow"} : undefined});
+---
+<!doctype html>
+<html lang={localeFromUrl(Astro.url)} data-public-theme="personabio-bio" data-appearance="dark">
+  <head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><SiteFavicon/><AppearanceHead/><title>{title}</title><Font cssVariable="--font-personabio" preload/><EmDashHead page={page}/></head>
+  <body><EmDashBodyStart page={page}/><slot/><EmDashBodyEnd page={page}/></body>
+</html>

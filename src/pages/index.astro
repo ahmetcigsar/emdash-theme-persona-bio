@@ -1,0 +1,22 @@
+---
+import { getSiteSettingsWithCacheHint } from "emdash";
+import { localizedEntry as getEmDashEntry, localizedMenu as getMenuWithCacheHint } from "../utils/localized-content";
+import PersonaBio from "../layouts/PersonaBio.astro";
+import ProfileCard from "../components/personabio/ProfileCard.astro";
+import { localeFromUrl, translate } from "../utils/i18n";
+const locale = localeFromUrl(Astro.url);
+const [{entry, error, cacheHint}, {data:settings, cacheHint:settingsHint}, {data:menu, cacheHint:menuHint}, {data:socialMenu, cacheHint:socialMenuHint}] = await Promise.all([
+  getEmDashEntry("bio_profiles", "personabio", { locale }), getSiteSettingsWithCacheHint(), getMenuWithCacheHint("primary", { locale }), getMenuWithCacheHint("social", { locale }),
+]);
+if (error && error.name !== "LiveEntryNotFoundError") return new Response(locale === "tr" ? "Profil yüklenemedi." : "Unable to load profile.", {status:500});
+if (Astro.cache?.enabled) Astro.cache.set({...cacheHint, tags:[...(cacheHint?.tags ?? []), ...(settingsHint.tags ?? []), ...(menuHint.tags ?? []), ...(socialMenuHint.tags ?? [])]});
+const profile = {
+  title: entry?.data.title || settings.title || "Profile",
+  description: entry?.data.description ?? settings.tagline,
+  avatar: entry?.data.avatar ?? { src: "/themes/personabio/avatar.svg", alt: "Profile placeholder" },
+};
+const documentTitle = translate(locale, settings.title || profile.title);
+---
+<PersonaBio title={documentTitle} description={profile.description} content={entry ? {collection:"bio_profiles",id:entry.data.id,slug:entry.id} : undefined}>
+  <ProfileCard profile={profile} links={socialMenu?.items ?? []} edit={entry?.edit} menu={menu?.items ?? []}/>
+</PersonaBio>

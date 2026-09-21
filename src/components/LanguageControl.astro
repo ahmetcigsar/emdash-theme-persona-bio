@@ -1,0 +1,31 @@
+---
+import { getTranslations } from "emdash";
+import { localeFromUrl, localePath, translate } from "../utils/i18n";
+interface Props { content?: { collection: string; id: string; slug?: string | null }; fullLabels?: boolean }
+const { content, fullLabels = false } = Astro.props;
+const locale = localeFromUrl(Astro.url);
+const translations = content ? (await getTranslations(content.collection, content.id)).translations.filter(item => item.status === "published" && item.slug) : [];
+function target(language: "tr" | "en") {
+  let path = Astro.url.pathname;
+  const match = translations.find(item => item.locale === language);
+  if (match?.slug && content && ["posts", "pages"].includes(content.collection)) path = `/${match.slug}`;
+  // A missing translation can use the published source's slug through CMS fallback.
+  if (!match && content && ["posts", "pages"].includes(content.collection)) {
+    const source = translations.find(item => item.locale === "en") ?? translations.find(item => item.locale === "tr");
+    if (source?.slug) path = `/${source.slug}`;
+  }
+  return `${localePath(path, language)}${Astro.url.search}`;
+}
+---
+<nav class="language-control" aria-label={translate(locale, "Dil seçimi")}>
+  <a href={target("tr")} lang="tr" aria-label="Türkçe" title="Türkçe" aria-current={locale === "tr" ? "page" : undefined}>{fullLabels ? "Türkçe" : "TR"}</a>
+  <a href={target("en")} lang="en" aria-label="English" title="English" aria-current={locale === "en" ? "page" : undefined}>{fullLabels ? "English" : "EN"}</a>
+</nav>
+<script>
+  document.addEventListener("click", (event) => {
+    const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>(".language-control a[lang]") : null;
+    const language = link?.lang;
+    if (language !== "tr" && language !== "en") return;
+    document.cookie = `site-language=${language}; Path=/; Max-Age=31536000; SameSite=Lax${location.protocol === "https:" ? "; Secure" : ""}`;
+  });
+</script>

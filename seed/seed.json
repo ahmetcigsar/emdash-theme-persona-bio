@@ -1,0 +1,287 @@
+{
+  "defaultLocale": "en",
+  "$schema": "https://emdashcms.com/seed.schema.json",
+  "version": "1",
+  "meta": {
+    "name": "Persona Bio",
+    "description": "A personal profile and publishing starter.",
+    "author": "Persona Bio contributors"
+  },
+  "settings": {
+    "title": "Persona Bio",
+    "tagline": "Notes on design, software, and making things."
+  },
+  "collections": [
+    {
+      "slug": "posts",
+      "label": "Posts",
+      "labelSingular": "Post",
+      "supports": [
+        "drafts",
+        "revisions",
+        "search",
+        "seo"
+      ],
+      "commentsEnabled": false,
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Title",
+          "type": "string",
+          "required": true,
+          "searchable": true
+        },
+        {
+          "slug": "featured_image",
+          "label": "Featured Image",
+          "type": "image"
+        },
+        {
+          "slug": "content",
+          "label": "Content",
+          "type": "portableText",
+          "searchable": true
+        },
+        {
+          "slug": "excerpt",
+          "label": "Excerpt",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "slug": "pages",
+      "label": "Pages",
+      "labelSingular": "Page",
+      "supports": [
+        "drafts",
+        "revisions",
+        "search"
+      ],
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Title",
+          "type": "string",
+          "required": true,
+          "searchable": true
+        },
+        {
+          "slug": "content",
+          "label": "Content",
+          "type": "portableText",
+          "searchable": true
+        }
+      ]
+    },
+    {
+      "slug": "bio_profiles",
+      "label": "Theme Profiles",
+      "labelSingular": "Profile",
+      "supports": [
+        "drafts",
+        "revisions"
+      ],
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "slug": "description",
+          "label": "Short description",
+          "type": "text"
+        },
+        {
+          "slug": "avatar",
+          "label": "Profile photo",
+          "type": "image"
+        }
+      ]
+    }
+  ],
+  "taxonomies": [
+    {
+      "name": "category",
+      "label": "Categories",
+      "labelSingular": "Category",
+      "hierarchical": true,
+      "collections": [
+        "posts"
+      ],
+      "terms": [
+        {
+          "slug": "development",
+          "label": "Development"
+        },
+        {
+          "slug": "design",
+          "label": "Design"
+        },
+        {
+          "slug": "notes",
+          "label": "Notes"
+        }
+      ]
+    },
+    {
+      "name": "tag",
+      "label": "Tags",
+      "labelSingular": "Tag",
+      "hierarchical": false,
+      "collections": [
+        "posts"
+      ],
+      "terms": [
+        {
+          "slug": "webdev",
+          "label": "Web Development"
+        },
+        {
+          "slug": "opinion",
+          "label": "Opinion"
+        },
+        {
+          "slug": "tools",
+          "label": "Tools"
+        },
+        {
+          "slug": "creativity",
+          "label": "Creativity"
+        }
+      ]
+    }
+  ],
+  "bylines": [
+    {
+      "id": "author",
+      "slug": "author",
+      "displayName": "Site Author"
+    }
+  ],
+  "menus": [
+    {
+      "name": "primary",
+      "label": "Primary Navigation",
+      "items": [
+        {
+          "label": "Home",
+          "url": "/",
+          "type": "custom"
+        },
+        {
+          "label": "About",
+          "url": "/about",
+          "type": "custom"
+        },
+        {
+          "label": "Posts",
+          "url": "/posts",
+          "type": "custom"
+        }
+      ]
+    },
+    {
+      "name": "social",
+      "label": "Social Links",
+      "items": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/",
+          "target": "_blank",
+          "type": "custom"
+        },
+        {
+          "label": "Email",
+          "url": "/email/hello@example.com",
+          "type": "custom"
+        }
+      ]
+    }
+  ],
+  "widgetAreas": [],
+  "sections": [],
+  "content": {
+    "pages": [
+      {
+        "id": "about",
+        "slug": "about",
+        "status": "published",
+        "data": {
+          "title": "About",
+          "content": [
+            {
+              "_type": "block",
+              "_key": "intro",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "intro-text",
+                  "text": "I write about the things I build and the ideas that shape them. Edit this page in EmDash to introduce yourself and your work.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "posts": [
+      {
+        "id": "first-note",
+        "slug": "a-space-for-your-ideas",
+        "status": "published",
+        "data": {
+          "title": "A space for your ideas",
+          "excerpt": "A small starting point for a personal writing practice.",
+          "content": [
+            {
+              "_type": "block",
+              "_key": "intro",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "intro-text",
+                  "text": "A personal site can be simple: a place to introduce yourself, share your work, and keep a record of what you learn.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "next",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "next-text",
+                  "text": "Replace this sample post with a project note, a useful discovery, or a question you are still exploring. Your next post does not need to be definitive to be worth sharing.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "bio_profiles": [
+      {
+        "id": "personabio-profile",
+        "slug": "personabio",
+        "status": "published",
+        "locale": "en",
+        "data": {
+          "title": "Persona Bio",
+          "description": "A personal space for writing, sharing ideas, and connecting with people."
+        }
+      }
+    ]
+  }
+}

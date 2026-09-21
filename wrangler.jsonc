@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "persona-bio",
+  "main": "./src/worker.ts",
+  "compatibility_date": "2026-02-24",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "workers_dev": true,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "persona-bio",
+      "database_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "persona-bio-media"
+    }
+  ],
+  "triggers": {
+    "crons": [
+      "* * * * *"
+    ]
+  }
+}

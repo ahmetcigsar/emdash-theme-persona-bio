@@ -1,0 +1,43 @@
+---
+import AppearanceControl from "./AppearanceControl.astro";
+import LanguageControl from "./LanguageControl.astro";
+import { localeFromUrl, translate } from "../utils/i18n";
+interface Props { content?: { collection: string; id: string; slug?: string | null } }
+const { content } = Astro.props;
+const locale = localeFromUrl(Astro.url);
+const t = (text: string) => translate(locale, text);
+---
+<details class="site-settings" data-site-settings>
+  <summary class="settings-trigger" aria-label={t("Ayarlar")} title={t("Ayarlar")}>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.5 3-.6 2.2-1.7 1L5 5.6 2.5 10l1.6 1.6v1.8L2.5 15 5 19.4l2.2-.6 1.7 1 .6 2.2h5l.6-2.2 1.7-1 2.2.6 2.5-4.4-1.6-1.6v-1.8L21.5 10 19 5.6l-2.2.6-1.7-1L14.5 3Z"/><circle cx="12" cy="12.5" r="3.2"/></svg>
+  </summary>
+  <div class="settings-panel">
+    <div class="settings-section">
+      <p class="settings-label">{t("Görünüm")}</p>
+      <AppearanceControl icons />
+    </div>
+    <div class="settings-section">
+      <p class="settings-label">{t("Dil")}</p>
+      <LanguageControl content={content} fullLabels />
+    </div>
+  </div>
+</details>
+
+<script>
+  document.querySelectorAll<HTMLDetailsElement>("[data-site-settings]").forEach((settings) => {
+    const trigger = settings.querySelector<HTMLElement>("summary");
+    document.addEventListener("click", (event) => {
+      if (event.target instanceof Node && !settings.contains(event.target)) settings.open = false;
+    });
+    document.addEventListener("focusin", (event) => {
+      if (event.target instanceof Node && !settings.contains(event.target)) settings.open = false;
+    });
+    settings.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && settings.open) {
+        event.preventDefault();
+        settings.open = false;
+        trigger?.focus();
+      }
+    });
+  });
+</script>

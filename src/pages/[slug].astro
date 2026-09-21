@@ -1,0 +1,23 @@
+---
+import { decodeSlug } from "emdash";
+import { localizedEntry } from "../utils/localized-content";
+import { localeFromUrl, localePath } from "../utils/i18n";
+import Page from "./pages/[slug].astro";
+import Post from "./posts/[slug].astro";
+
+const locale = localeFromUrl(Astro.url);
+const slug = decodeSlug(Astro.params.slug);
+if (!slug) return Astro.redirect(localePath("/404", locale));
+
+// Pages take precedence when a page and a post share the same slug.
+const page = await localizedEntry("pages", slug, { locale });
+if (Astro.cache?.enabled) Astro.cache.set(page.cacheHint);
+let postExists = false;
+if (!page.entry) {
+  const post = await localizedEntry("posts", slug, { locale });
+  if (Astro.cache?.enabled) Astro.cache.set(post.cacheHint);
+  postExists = Boolean(post.entry);
+}
+if (!page.entry && !postExists) return Astro.redirect(localePath("/404", locale));
+---
+{page.entry ? <Page /> : <Post />}

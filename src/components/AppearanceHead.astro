@@ -1,0 +1,36 @@
+<script is:inline>
+  (() => {
+    const key = "persona-bio-appearance";
+    const valid = (value) => ["light", "dark"].includes(value) ? value : "dark";
+    const apply = (value) => {
+      const preference = valid(value);
+      document.documentElement.dataset.appearance = preference;
+      document.querySelectorAll("[data-appearance-select]").forEach((select) => {
+        select.value = preference;
+      });
+      document.querySelectorAll("[data-appearance-option]").forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.appearanceOption === preference));
+      });
+    };
+    let saved = "dark";
+    try { saved = localStorage.getItem(key) || "dark"; } catch {}
+    apply(saved);
+    document.addEventListener("DOMContentLoaded", () => apply(document.documentElement.dataset.appearance), { once: true });
+    document.addEventListener("change", (event) => {
+      if (!event.target.matches("[data-appearance-select]")) return;
+      const preference = valid(event.target.value);
+      apply(preference);
+      try { localStorage.setItem(key, preference); } catch {}
+    });
+    document.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-appearance-option]");
+      if (!button) return;
+      const preference = valid(button.dataset.appearanceOption);
+      apply(preference);
+      try { localStorage.setItem(key, preference); } catch {}
+    });
+    window.addEventListener("storage", (event) => {
+      if (event.key === key || event.key === null) apply(event.newValue);
+    });
+  })();
+</script>

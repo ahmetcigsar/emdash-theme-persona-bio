@@ -1,0 +1,41 @@
+---
+import LinkIcon from "./personabio/LinkIcon.astro";
+
+interface Props { title: string; url: string; locale: string }
+const { title, url, locale } = Astro.props;
+const shareUrl = new URL(url);
+shareUrl.search = "";
+shareUrl.hash = "";
+const canonical = shareUrl.href;
+const link = (base: string, params: Record<string, string>) => `${base}?${new URLSearchParams(params)}`;
+const platforms = [
+  { name: "X", href: link("https://twitter.com/intent/tweet", { url: canonical, text: title }) },
+  { name: "WhatsApp", href: link("https://wa.me/", { text: `${title}\n${canonical}` }) },
+  { name: "Telegram", href: link("https://t.me/share/url", { url: canonical, text: title }) },
+  { name: "LinkedIn", href: link("https://www.linkedin.com/sharing/share-offsite/", { url: canonical }) },
+  { name: "Reddit", href: link("https://www.reddit.com/submit", { url: canonical, title }) },
+  { name: "Facebook", href: link("https://www.facebook.com/sharer/sharer.php", { u: canonical }) },
+];
+---
+
+<nav class="post-share" aria-label={locale === "tr" ? "Yazıyı paylaş" : "Share this post"}>
+  <span class="share-label">{locale === "tr" ? "Paylaş:" : "Share:"}</span>
+  <div class="share-links">
+    {platforms.map(({ name, href }) => (
+      <a href={href} target="_blank" rel="noopener noreferrer" aria-label={locale === "tr" ? `${name} ile paylaş (yeni sekme)` : `Share via ${name} (new tab)`} title={name}>
+        <LinkIcon url={href} />
+      </a>
+    ))}
+  </div>
+</nav>
+
+<style>
+  .post-share { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem .75rem; margin-block: 2rem; color: var(--color-text-secondary); }
+  .share-label { font-size: .9rem; font-weight: 500; }
+  .share-links { display: flex; flex-wrap: wrap; gap: .125rem; }
+  .share-links a { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; color: inherit; transition: color .2s, background-color .2s, transform .2s; }
+  .share-links a :global(svg) { width: 20px; height: 20px; }
+  .share-links a:hover { color: var(--color-text); background: var(--color-bg-subtle); transform: translateY(-2px); }
+  .share-links a:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { .share-links a { transition: none; } .share-links a:hover { transform: none; } }
+</style>

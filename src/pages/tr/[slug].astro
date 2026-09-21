@@ -1,0 +1,14 @@
+---
+import { decodeSlug } from "emdash";
+import { localizedEntry } from "../../utils/localized-content";
+import Entry from "../[slug].astro";
+
+const slug = decodeSlug(Astro.params.slug);
+if (!slug) return Astro.redirect("/en/404");
+const page = await localizedEntry("pages", slug, { locale: "en" });
+if (!page.entry) {
+  const post = await localizedEntry("posts", slug, { locale: "en" });
+  if (!post.entry) return Astro.redirect("/en/404");
+}
+---
+<Entry />
