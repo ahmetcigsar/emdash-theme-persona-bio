@@ -8,14 +8,14 @@ export function personabioTheme(origin: string) {
     author: { id: "local", name: "Persona Bio", verified: false, avatarUrl: null },
     keywords: ["bio", "personal", "minimal", "personabio", "local", "active"],
     previewUrl: `${origin}${PERSONABIO_PREVIEW_PATH}`, demoUrl: `${origin}/themes/personabio/demo`,
-    hasThumbnail: true, thumbnailUrl: `${origin}/themes/personabio/preview.png`,
+    hasThumbnail: true, thumbnailUrl: `${origin}/themes/personabio/preview.jpg`,
     createdAt: "2026-09-19T00:00:00Z", updatedAt: "2026-09-21T00:00:00Z",
     repositoryUrl: "https://github.com/ahmetcigsar/emdash-theme-persona-bio", homepageUrl: `${origin}/`, license: "MIT",
     screenshotCount: 4, screenshotUrls: [
-      `${origin}/themes/personabio/preview.png`,
-      `${origin}/themes/personabio/home-mobile-en.png`,
-      `${origin}/themes/personabio/posts-desktop-en.png`,
-      `${origin}/themes/personabio/posts-mobile-en.png`,
+      `${origin}/themes/personabio/preview.jpg`,
+      `${origin}/themes/personabio/home-mobile-en.jpg`,
+      `${origin}/themes/personabio/posts-desktop-en.jpg`,
+      `${origin}/themes/personabio/posts-mobile-en.jpg`,
     ],
   };
 }

@@ -4,4 +4,4 @@ This theme adapts the EmDash Astro blog template, copyright 2026 Cloudflare Inc.
 
 ## Live-site screenshots
 
-The PNG screenshots in `public/themes/personabio/` show the English homepage and posts archive of https://ahmet.bio/en/, captured on September 21, 2026 and included at the site owner’s request to demonstrate the theme. The displayed site content, photographs, and third-party imagery retain their respective rights; inclusion as a screenshot does not relicense that content under MIT. The MIT license continues to cover the theme code, bundled sample text, and SVG placeholders.
+The JPEG screenshots in `public/themes/personabio/` show the English homepage and posts archive of https://ahmet.bio/en/, captured on September 21, 2026 and included at the site owner’s request to demonstrate the theme. The displayed site content, photographs, and third-party imagery retain their respective rights; inclusion as a screenshot does not relicense that content under MIT. The MIT license continues to cover the theme code, bundled sample text, and SVG placeholders.

@@ -12,17 +12,17 @@ English screenshots from [ahmet.bio](https://ahmet.bio/en/), a live site using P
 
 ### Homepage — desktop
 
-![English homepage on ahmet.bio, desktop](public/themes/personabio/preview.png)
+![English homepage on ahmet.bio, desktop](public/themes/personabio/preview.jpg)
 
 ### Posts — desktop
 
-![English posts page on ahmet.bio, desktop](public/themes/personabio/posts-desktop-en.png)
+![English posts page on ahmet.bio, desktop](public/themes/personabio/posts-desktop-en.jpg)
 
 ### Mobile
 
 | Homepage | Posts |
 | --- | --- |
-| ![English homepage on ahmet.bio, mobile](public/themes/personabio/home-mobile-en.png) | ![English posts page on ahmet.bio, mobile](public/themes/personabio/posts-mobile-en.png) |
+| ![English homepage on ahmet.bio, mobile](public/themes/personabio/home-mobile-en.jpg) | ![English posts page on ahmet.bio, mobile](public/themes/personabio/posts-mobile-en.jpg) |
 
 Captured from the live English pages in dark mode. Screenshots are showcase material; the theme code remains MIT-licensed. See [third-party notices](THIRD_PARTY_NOTICES.md) for screenshot content attribution.
 
