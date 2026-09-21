@@ -6,7 +6,25 @@ A responsive personal profile and blog theme for [EmDash CMS](https://emdashcms.
 
 [Download ZIP](https://github.com/ahmetcigsar/emdash-theme-persona-bio/archive/refs/heads/main.zip) · [Use this template](https://github.com/new?template_name=emdash-theme-persona-bio&template_owner=ahmetcigsar) · [Theme guide](docs/theme.md)
 
-![Persona Bio desktop preview](public/themes/personabio/preview.png)
+## Live screenshots
+
+English screenshots from [ahmet.bio](https://ahmet.bio/en/), a live site using Persona Bio. These show the site's own content and customization; the starter includes generic sample content.
+
+### Homepage — desktop
+
+![English homepage on ahmet.bio, desktop](public/themes/personabio/preview.png)
+
+### Posts — desktop
+
+![English posts page on ahmet.bio, desktop](public/themes/personabio/posts-desktop-en.png)
+
+### Mobile
+
+| Homepage | Posts |
+| --- | --- |
+| ![English homepage on ahmet.bio, mobile](public/themes/personabio/home-mobile-en.png) | ![English posts page on ahmet.bio, mobile](public/themes/personabio/posts-mobile-en.png) |
+
+Captured from the live English pages in dark mode. Screenshots are showcase material; the theme code remains MIT-licensed. See [third-party notices](THIRD_PARTY_NOTICES.md) for screenshot content attribution.
 
 ## Features
 

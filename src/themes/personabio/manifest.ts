@@ -9,8 +9,13 @@ export function personabioTheme(origin: string) {
     keywords: ["bio", "personal", "minimal", "personabio", "local", "active"],
     previewUrl: `${origin}${PERSONABIO_PREVIEW_PATH}`, demoUrl: `${origin}/themes/personabio/demo`,
     hasThumbnail: true, thumbnailUrl: `${origin}/themes/personabio/preview.png`,
-    createdAt: "2026-09-19T00:00:00Z", updatedAt: "2026-09-19T00:00:00Z",
+    createdAt: "2026-09-19T00:00:00Z", updatedAt: "2026-09-21T00:00:00Z",
     repositoryUrl: "https://github.com/ahmetcigsar/emdash-theme-persona-bio", homepageUrl: `${origin}/`, license: "MIT",
-    screenshotCount: 1, screenshotUrls: [`${origin}/themes/personabio/preview.png`],
+    screenshotCount: 4, screenshotUrls: [
+      `${origin}/themes/personabio/preview.png`,
+      `${origin}/themes/personabio/home-mobile-en.png`,
+      `${origin}/themes/personabio/posts-desktop-en.png`,
+      `${origin}/themes/personabio/posts-mobile-en.png`,
+    ],
   };
 }
